@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2027 Strategy</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      color: white;
+      font-family: monospace;
+      text-align: center;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    h1 {
+      font-size: 2em;
+      color: orange;
+      margin-top: 40px;
+      font-weight: bold;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      color: orange;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .digits-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      max-width: 300px;
+      margin: 0 auto 20px auto;
+    }
+
+    .digit {
+      width: 50px;
+      height: 60px;
+      font-size: 2em;
+      border: 2px solid orange;
+      background: black;
+      color: orange;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .selected {
+      background: orange;
+      color: black;
+    }
+
+    .result {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .correct {
+      color: limegreen;
+    }
+
+    .wrong {
+      color: red;
+    }
+
+    .btn-retry {
+      display: none;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      font-weight: bold;
+      color: black;
+      background: orange;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <h1>2027 Strategy: Accelerate Growth, Build Trust</h1>
+  <h2>When you need to be sure</h2>
+
+  <div class="digits-grid" id="digitGrid"></div>
+  <div class="result" id="result"></div>
+  <button class="btn-retry" id="retryBtn" onclick="resetSelection()">TRY AGAIN</button>
+
+  <script>
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*'.split('');
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#cc6600'; // darker orange
+      ctx.font = fontSize + 'px monospace';
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(drawMatrix, 33);
+
+    const digitGrid = document.getElementById("digitGrid");
+    const result = document.getElementById("result");
+    const retryBtn = document.getElementById("retryBtn");
+    let selected = [];
+
+    function renderDigits() {
+      digitGrid.innerHTML = '';
+      for (let i = 0; i <= 9; i++) {
+        const cell = document.createElement("div");
+        cell.classList.add("digit");
+        cell.textContent = i;
+        cell.addEventListener("click", () => toggleDigit(i, cell));
+        digitGrid.appendChild(cell);
+      }
+    }
+
+    function toggleDigit(number, element) {
+      if (element.classList.contains("selected")) return;
+
+      if (selected.length < 3) {
+        selected.push(number);
+        element.classList.add("selected");
+        if (selected.length === 3) checkAnswer();
+      }
+    }
+
+    function checkAnswer() {
+      if (selected.join('') === '526') {
+        result.textContent = 'CORRECT ANSWER';
+        result.className = 'result correct';
+      } else {
+        result.textContent = 'WRONG ANSWER';
+        result.className = 'result wrong';
+        retryBtn.style.display = 'inline-block';
+      }
+    }
+
+    function resetSelection() {
+      selected = [];
+      result.textContent = '';
+      result.className = 'result';
+      retryBtn.style.display = 'none';
+      renderDigits();
+    }
+
+    renderDigits();
+  </script>
+</body>
+</html>
